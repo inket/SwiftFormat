@@ -2506,7 +2506,7 @@ extension RulesTests {
         )
     }
 
-    func testConditionWrapAutoForLongGuard() {
+    func testConditionsWrapAutoForLongGuard() {
         let input = """
         guard let foo = foo, let bar = bar, let third = third else {}
         """
@@ -2522,11 +2522,22 @@ extension RulesTests {
             for: input,
             [output],
             rules: [FormatRules.wrapArguments],
-            options: FormatOptions(indent: "  ", wrapConditions: .auto, maxWidth: 40)
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 40)
         )
     }
 
-    func testConditionWrapAutoForMultilineGuard() {
+    func testConditionsWrapAutoForLongGuardWithoutChanges() {
+        let input = """
+        guard let foo = foo, let bar = bar, let third = third else {}
+        """
+        testFormatting(
+            for: input,
+            rules: [FormatRules.wrapArguments],
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 120)
+        )
+    }
+
+    func testConditionsWrapAutoForMultilineGuard() {
         let input = """
         guard let foo = foo,
               let bar = bar, let third = third else {}
@@ -2543,11 +2554,46 @@ extension RulesTests {
             for: input,
             [output],
             rules: [FormatRules.wrapArguments, FormatRules.indent],
-            options: FormatOptions(indent: "  ", wrapConditions: .auto, maxWidth: 40)
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 40)
         )
     }
 
-    func testConditionWrapAutoForGuardWhenElseOnNewLine() {
+    func testConditionsWrapAutoOptionForGuardStyledAsBeforeArgument() {
+        let input = """
+        guard
+            let foo = foo,
+            let bar = bar,
+            let third = third
+        else {}
+
+        guard
+        let foo = foo,
+        let bar = bar,
+        let third = third
+        else {}
+        """
+
+        let output = """
+        guard let foo = foo,
+              let bar = bar,
+              let third = third
+        else {}
+
+        guard let foo = foo,
+              let bar = bar,
+              let third = third
+        else {}
+        """
+
+        testFormatting(
+            for: input,
+            [output],
+            rules: [FormatRules.wrapArguments],
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 40)
+        )
+    }
+
+    func testConditionsWrapAutoOptionForGuardWhenElseOnNewLine() {
         let input = """
         guard let foo = foo, let bar = bar, let third = third
         else {}
@@ -2564,11 +2610,120 @@ extension RulesTests {
             for: input,
             [output],
             rules: [FormatRules.wrapArguments],
-            options: FormatOptions(indent: "  ", wrapConditions: .auto, maxWidth: 40)
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 40)
         )
     }
 
-    func testWrapConditionsAutoForLongIf() {
+    func testConditionsWrapAutoOptionForGuardWhenElseOnNewLineAndNotAligned() {
+        let input = """
+        guard let foo = foo, let bar = bar, let third = third
+           else {}
+
+        guard let foo = foo, let bar = bar, let third = third
+
+        else {}
+        """
+
+        let output = """
+        guard let foo = foo,
+              let bar = bar,
+              let third = third
+        else {}
+
+        guard let foo = foo,
+              let bar = bar,
+              let third = third
+        else {}
+        """
+
+        testFormatting(
+            for: input,
+            [output],
+            rules: [FormatRules.wrapArguments],
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 40)
+        )
+    }
+
+    func testConditionsWrapAutoOptionForGuardInMethod() {
+        let input = """
+        func doSmth() {
+            let a = smth as? SmthElse
+
+            guard
+                let foo = foo,
+                let bar = bar,
+                let third = third
+            else {
+                return nil
+            }
+
+            let value = a.doSmth()
+        }
+        """
+
+        let output = """
+        func doSmth() {
+            let a = smth as? SmthElse
+
+            guard let foo = foo,
+                  let bar = bar,
+                  let third = third
+            else {
+                return nil
+            }
+
+            let value = a.doSmth()
+        }
+        """
+
+        testFormatting(
+            for: input,
+            [output],
+            rules: [FormatRules.wrapArguments],
+            options: FormatOptions(indent: "    ", conditionsWrap: .auto, maxWidth: 120)
+        )
+    }
+
+    func testConditionsWrapAutoOptionForIfInsideMethod() {
+        let input = """
+        func doSmth() {
+            let a = smth as? SmthElse
+
+            if
+            let foo = foo,
+            let bar = bar,
+            let third = third {
+                return nil
+            }
+
+            let value = a.doSmth()
+        }
+        """
+
+        let output = """
+        func doSmth() {
+            let a = smth as? SmthElse
+
+            if let foo = foo,
+               let bar = bar,
+               let third = third {
+                return nil
+            }
+
+            let value = a.doSmth()
+        }
+        """
+
+        testFormatting(
+            for: input,
+            [output],
+            rules: [FormatRules.wrapArguments],
+            options: FormatOptions(indent: "    ", conditionsWrap: .auto, maxWidth: 120),
+            exclude: ["wrapMultilineStatementBraces"]
+        )
+    }
+
+    func testConditionsWrapAutoOptionForLongIf() {
         let input = """
         if let foo = foo, let bar = bar, let third = third {}
         """
@@ -2583,11 +2738,11 @@ extension RulesTests {
             for: input,
             [output],
             rules: [FormatRules.wrapArguments, FormatRules.indent],
-            options: FormatOptions(indent: "  ", wrapConditions: .auto, maxWidth: 25)
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 25)
         )
     }
 
-    func testWrapConditionsAutoForLongMultilineIf() {
+    func testConditionsWrapAutoOptionForLongMultilineIf() {
         let input = """
         if let foo = foo,
         let bar = bar, let third = third {}
@@ -2603,7 +2758,27 @@ extension RulesTests {
             for: input,
             [output],
             rules: [FormatRules.wrapArguments, FormatRules.indent],
-            options: FormatOptions(indent: "  ", wrapConditions: .auto, maxWidth: 25)
+            options: FormatOptions(indent: "  ", conditionsWrap: .auto, maxWidth: 25)
+        )
+    }
+
+    func testConditionWrapAlwaysOptionForLongGuard() {
+        let input = """
+        guard let foo = foo, let bar = bar, let third = third else {}
+        """
+
+        let output = """
+        guard let foo = foo,
+              let bar = bar,
+              let third = third
+        else {}
+        """
+
+        testFormatting(
+            for: input,
+            [output],
+            rules: [FormatRules.wrapArguments],
+            options: FormatOptions(indent: "  ", conditionsWrap: .always, maxWidth: 120)
         )
     }
 
