@@ -1838,6 +1838,7 @@ extension RulesTests {
         ("testSingleAnonymousClosureArgumentUnwrapped", testSingleAnonymousClosureArgumentUnwrapped),
         ("testSingleClosureArgumentAfterCaptureListUnwrapped", testSingleClosureArgumentAfterCaptureListUnwrapped),
         ("testSingleClosureArgumentUnwrapped", testSingleClosureArgumentUnwrapped),
+        ("testSingleClosureArgumentWithReturnValueUnwrapped", testSingleClosureArgumentWithReturnValueUnwrapped),
         ("testSingleIndentTrailingClosureBody", testSingleIndentTrailingClosureBody),
         ("testSingleIndentTrailingClosureBodyOfShortMethod", testSingleIndentTrailingClosureBodyOfShortMethod),
         ("testSingleIndentTrailingClosureBodyThatStartsOnFollowingLine", testSingleIndentTrailingClosureBodyThatStartsOnFollowingLine),
