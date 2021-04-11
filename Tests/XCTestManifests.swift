@@ -1088,6 +1088,7 @@ extension RulesTests {
         ("testMultilineGuardElseUnwrapped", testMultilineGuardElseUnwrapped),
         ("testMultilineGuardElseWrapped", testMultilineGuardElseWrapped),
         ("testMultilineGuardElseWrappedByDefaultIfBracesOnNextLine", testMultilineGuardElseWrappedByDefaultIfBracesOnNextLine),
+        ("testMultilineGuardLet", testMultilineGuardLet),
         ("testMultilineIfBraceOnNextLine", testMultilineIfBraceOnNextLine),
         ("testMultilineIfBraceOnSameLine", testMultilineIfBraceOnSameLine),
         ("testMultilineInitBraceOnNextLine", testMultilineInitBraceOnNextLine),
