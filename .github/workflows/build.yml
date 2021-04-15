@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  pull_request:
+    paths:
+      - "**/*"
+
+jobs:
+  build:
+    name: Build SwiftFormat
+    runs-on: ubuntu-latest
+    steps:
+      - uses: oprypin/find-latest-tag@v1
+        id: findtag  # The step ID to refer to later.
+        with:
+          repository: nicklockwood/SwiftFormat  # The repository to scan.
+          releases-only: true  # We know that all relevant tags have a GitHub release for them.
+      - run: echo "nicklockwood/SwiftFormat is at version ${{ steps.findtag.outputs.tag }}"
+      - uses: actions/checkout@v2
+        with:
+          repository: nicklockwood/SwiftFormat  # Download that repository.
+          ref: ${{ steps.findtag.outputs.tag }}  # At the latest released version, found earlier.
+      - name: Build it
+        run: |
+          swift build --configuration release
+          SWIFTFORMAT_BIN_PATH=`swift build --configuration release --show-bin-path`
+          mv $SWIFTFORMAT_BIN_PATH/swiftformat "${HOME}/swiftformat_linux"
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: swiftformat_linux
+          path: ~/swiftformat_linux
+          retention-days: 5
+      - uses: actions/checkout@v2
+        with:
+          ref: master
+      - run: mv ~/swiftformat_linux ./CommandLineTool/swiftformat_linux
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Commit swiftformat_linux
+          branch: master
+          commit_options: '--no-verify --signoff'
+          file_pattern: CommandLineTool/swiftformat_linux
