@@ -1,0 +1,29 @@
+name: Build for Linux
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build'
+        required: false
+        default: 'master'
+
+jobs:
+  build:
+    name: Build SwiftFormat for Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          branch: ${{ github.event.inputs.name }}
+      - name: Build it
+        run: |
+          swift build --configuration release
+          SWIFTFORMAT_BIN_PATH=`swift build --configuration release --show-bin-path`
+          mv $SWIFTFORMAT_BIN_PATH/swiftformat "${HOME}/swiftformat_linux"
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v2
+        with:
+          name: swiftformat_linux
+          path: ~/swiftformat_linux
+          retention-days: 5
